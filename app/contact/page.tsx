@@ -1,0 +1,8 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { SiteHeader } from "@/components/site/site-header";
+import { SiteFooter } from "@/components/site/site-footer";
+import { siteConfig } from "@/config/site";
+
+export const metadata: Metadata = { title: "Contact", description: "Talk to House of Veya about your home interior project." };
+export default function ContactPage() { return <main><SiteHeader /><section className="px-5 pb-24 pt-20 sm:px-9 lg:px-12 lg:pt-28"><div className="mx-auto grid min-h-[68vh] max-w-[1500px] gap-14 lg:grid-cols-[1.2fr_.8fr] lg:items-end"><div><p className="text-sm text-[#7a6a5e]">Talk to a designer</p><h1 className="mt-6 font-display text-[clamp(4.5rem,10vw,10rem)] leading-[.82] tracking-[-.06em]">Tell us about<br />your home.</h1><Link href="/start-project" className="mt-10 inline-block bg-[#a44928] px-7 py-5 text-sm text-white">Start your project</Link></div><div className="border-t border-[#8f7f70] text-lg"><a href={`mailto:${siteConfig.email}`} className="flex justify-between border-b border-[#cbb9a6] py-6"><span>Email</span><span>{siteConfig.email}</span></a><a href={`tel:${siteConfig.phone.replace(/\s/g, "")}`} className="flex justify-between border-b border-[#cbb9a6] py-6"><span>Phone</span><span>{siteConfig.phone}</span></a><div className="border-b border-[#cbb9a6] py-6"><p className="text-sm text-[#7a6a5e]">Studios</p><p className="mt-2">Kolkata · Bengaluru · Mumbai</p></div><p className="mt-7 text-sm leading-6 text-[#73655a]">Consultations are by appointment. We usually reply within one working day.</p></div></div></section><SiteFooter /></main>; }

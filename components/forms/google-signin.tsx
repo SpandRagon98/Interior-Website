@@ -1,0 +1,3 @@
+"use client";
+import { signIn } from "next-auth/react";
+export function GoogleSignin({ configured = true, redirectTo = "/account" }: { configured?: boolean; redirectTo?: string }) { return <button type="button" disabled={!configured} onClick={() => void signIn("google", { redirectTo })} className="flex min-h-14 w-full items-center justify-center gap-3 border border-[#1b100c] bg-[#f7f1e9] px-6 text-sm disabled:cursor-not-allowed disabled:opacity-45"><span className="grid size-6 place-items-center rounded-full border border-[#b49f8c] font-display">G</span>{configured ? "Continue with Google" : "Google sign-in needs configuration"}</button>; }

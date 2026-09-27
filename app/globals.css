@@ -1,0 +1,33 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../vendor/shadcn-tailwind-4.13.0.css";
+
+:root {
+  --background: #f3ece2; --foreground: #1b100c; --card: #faf6f0; --card-foreground: #1b100c;
+  --popover: #faf6f0; --popover-foreground: #1b100c; --primary: #1b100c; --primary-foreground: #f3ece2;
+  --secondary: #d8c8b7; --secondary-foreground: #1b100c; --muted: #e7ddd1; --muted-foreground: #6f6258;
+  --accent: #a44928; --accent-foreground: #fffaf5; --destructive: #a62929; --border: #cbb9a6;
+  --input: #cbb9a6; --ring: #a44928; --radius: 0rem;
+}
+
+@theme inline {
+  --color-background: var(--background); --color-foreground: var(--foreground); --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground); --color-popover: var(--popover); --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground); --color-destructive: var(--destructive);
+  --color-border: var(--border); --color-input: var(--input); --color-ring: var(--ring); --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--background); }
+body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-body), sans-serif; }
+a { color: inherit; text-decoration: none; }
+button, input, select, textarea { font: inherit; }
+::selection { background: #a44928; color: #fff; }
+:focus-visible { outline: 2px solid #c36d47; outline-offset: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

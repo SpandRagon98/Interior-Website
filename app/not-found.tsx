@@ -1,0 +1,2 @@
+import Link from "next/link"; import { SiteHeader } from "@/components/site/site-header";
+export default function NotFound(){return <main><SiteHeader/><section className="grid min-h-[70vh] place-items-center px-5 text-center"><div><p className="text-sm text-[#7a6a5e]">404</p><h1 className="mt-4 font-display text-7xl">This room is still on the drawing board.</h1><Link href="/" className="mt-8 inline-block border-b border-[#1b100c] pb-1">Return home</Link></div></section></main>}
