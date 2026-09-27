@@ -36,9 +36,9 @@ yarn-error.log*
 
 # typescript
 next-env.d.ts
+/tsconfig.tsbuildinfo
 /dist/
 /.wrangler/
-/.cloudflare-secrets.json
 # Checkout-local execution profile and tool state; never publish them.
 /.sites-runtime/
 /.agents/

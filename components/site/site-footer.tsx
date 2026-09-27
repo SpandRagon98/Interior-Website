@@ -17,7 +17,6 @@ export function SiteFooter() {
           <div className="space-y-3 text-sm">
             <p className="mb-5 text-white/45">Begin</p>
             <Link className="block" href="/start-project">Start your project</Link>
-            <Link className="block" href="/signin">Sign in</Link>
             <a className="block" href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>
             <a className="block" href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}>{siteConfig.phone}</a>
           </div>

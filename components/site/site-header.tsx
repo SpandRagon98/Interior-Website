@@ -15,7 +15,6 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
           {siteConfig.nav.map((item) => <Link key={item.href} href={item.href} className="transition-opacity hover:opacity-60">{item.label}</Link>)}
         </nav>
         <div className="flex items-center gap-3">
-          <Link href="/account" className="hidden text-[0.76rem] sm:block">Account</Link>
           <Link href="/start-project" className={`hidden border px-5 py-3 text-[0.7rem] tracking-[0.1em] sm:block ${overlay ? "border-white/70" : "border-[#1b100c]"}`}>Start your project</Link>
           <button type="button" aria-expanded={open} aria-controls="mobile-nav" aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)} className={`grid size-11 place-items-center border lg:hidden ${overlay ? "border-white/50" : "border-[#1b100c]"}`}>{open ? <X size={19} /> : <Menu size={19} />}</button>
         </div>

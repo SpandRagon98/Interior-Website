@@ -1,2 +1,3 @@
 import type { MetadataRoute } from "next";
-export default function robots(): MetadataRoute.Robots { return { rules: { userAgent: "*", allow: "/", disallow: ["/account/", "/api/"] }, sitemap: "https://house-of-veya.openai.site/sitemap.xml" }; }
+export const dynamic = "force-static";
+export default function robots(): MetadataRoute.Robots { return { rules: { userAgent: "*", allow: "/" }, sitemap: "https://spandragon98.github.io/Interior-Website/sitemap.xml" }; }
