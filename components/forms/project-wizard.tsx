@@ -18,7 +18,35 @@ type Draft = typeof initial;
 
 export function ProjectWizard({ user }: { user: { authenticated: boolean; name?: string | null; email?: string | null } }) {
   const [step, setStep] = useState(0); const [draft, setDraft] = useState<Draft>({ ...initial, name: user.name ?? "", email: user.email ?? "" }); const [files, setFiles] = useState<File[]>([]); const [ready, setReady] = useState(false); const [busy, setBusy] = useState(false); const [error, setError] = useState(""); const [projectId, setProjectId] = useState("");
-  useEffect(() => { const saved = localStorage.getItem(STORAGE_KEY); if (saved) { try { const parsed = JSON.parse(saved); setDraft({ ...initial, ...parsed, email: user.email ?? parsed.email }); } catch { /* ignore invalid local draft */ } } const savedStep = Number(localStorage.getItem(`${STORAGE_KEY}-step`) ?? 0); if (Number.isInteger(savedStep) && savedStep >= 0 && savedStep < steps.length) setStep(savedStep); void loadDraftFiles().then(setFiles).catch(() => undefined); setReady(true); }, [user.email]);
+  useEffect(() => {
+    let active = true;
+
+    async function restoreDraft() {
+      let restoredDraft: Draft | undefined;
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved) as Partial<Draft>;
+          restoredDraft = { ...initial, ...parsed, email: user.email ?? parsed.email ?? "" };
+        } catch {
+          // Ignore an invalid local draft and start with the authenticated profile.
+        }
+      }
+
+      const savedStep = Number(localStorage.getItem(`${STORAGE_KEY}-step`) ?? 0);
+      const restoredFiles = await loadDraftFiles().catch(() => [] as File[]);
+
+      if (!active) return;
+      if (restoredDraft) setDraft(restoredDraft);
+      if (Number.isInteger(savedStep) && savedStep >= 0 && savedStep < steps.length) setStep(savedStep);
+      setFiles(restoredFiles);
+      setReady(true);
+    }
+
+    void restoreDraft();
+    return () => { active = false; };
+  }, [user.email]);
   useEffect(() => { if (ready) localStorage.setItem(STORAGE_KEY, JSON.stringify(draft)); }, [draft, ready]);
   useEffect(() => { if (ready) localStorage.setItem(`${STORAGE_KEY}-step`, String(step)); }, [step, ready]);
   useEffect(() => { const context = document.modelContext; if (!context?.registerTool) return; const lifecycle = new AbortController(); void Promise.resolve(context.registerTool({ name: "stage_interior_project_brief", title: "Stage project brief", description: "Prefill and display a House of Veya project draft without submitting it.", inputSchema: { type: "object", properties: { city: { type: "string" }, propertyType: { type: "string" }, bhk: { type: "string" }, carpetArea: { type: "number" }, rooms: { type: "array", items: { type: "string" } }, styles: { type: "array", items: { type: "string" } }, budget: { type: "string" }, timeline: { type: "string" } }, additionalProperties: false }, annotations: { readOnlyHint: false, untrustedContentHint: false }, execute(input) { const update = input as Partial<Draft>; const next = { ...draft, ...update }; setDraft(next); setStep(8); return { staged: true, nextAction: "Review the visible brief and sign in before submission." }; } }, { signal: lifecycle.signal })).catch(() => undefined); return () => lifecycle.abort(); }, [draft]);

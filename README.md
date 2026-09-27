@@ -125,9 +125,39 @@ After configuration, test in this order:
 8. Open `/account` and verify only the signed-in user's projects appear.
 9. Try opening another user's project URL while signed into the wrong account; the route must return not found.
 
-### 11. Deploy
+### 11. Deploy automatically from GitHub
 
-This project is prepared for the bundled Sites/Vinext Cloudflare Worker build. Add production environment variables before the production deployment that must use Google services. If you deploy elsewhere, use a platform that supports Next.js App Router server routes, server-side environment secrets and outbound HTTPS requests to Google APIs.
+The repository includes `.github/workflows/deploy.yml`. Every push to `main` type-checks and builds the application, then deploys the generated Vinext worker to Cloudflare Workers. The workflow can also be run manually from the repository's **Actions** tab.
+
+In **Settings → Environments**, create a `production` environment. Add these required Actions secrets to that environment (or as repository secrets):
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+Add the following application secrets for Google sign-in, Sheets and Drive:
+
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
+- `GOOGLE_PRIVATE_KEY`
+- `GOOGLE_SHEET_ID`
+- `GOOGLE_DRIVE_FOLDER_ID`
+- `AUTH_SECRET`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL`
+
+The workflow creates a temporary JSON file only on the GitHub-hosted runner, passes it to Wrangler's `--secrets-file` option, and deletes it after deployment. The file is ignored by Git and secret values are never printed.
+
+The first successful run creates or updates the `house-of-veya` Worker. Set `NEXTAUTH_URL` to its final `workers.dev` or custom-domain URL, add the matching `/api/auth/callback/google` URI to the Google OAuth client, and run the workflow again.
+
+For a manual production deployment after building, run:
+
+```bash
+npm run build
+npm run deploy
+```
+
+This project is also compatible with the bundled Sites deployment path. Add production environment variables before any deployment that must use Google services. If you deploy elsewhere, use a platform that supports Next.js App Router server routes, server-side environment secrets and outbound HTTPS requests to Google APIs.
 
 Update these URLs after choosing the final production domain:
 

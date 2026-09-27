@@ -1,23 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Calculator, Check } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { calculateEstimate, formatInr, type EstimateInput, type FinishLevel } from "@/config/pricing";
+import { formatInr, type EstimateInput, type FinishLevel } from "@/config/pricing";
 import { siteConfig } from "@/config/site";
 
 const initial: EstimateInput = { city: "Kolkata", propertyType: "Apartment", bhk: "3 BHK", carpetArea: 1500, rooms: ["Living Room", "Kitchen", "Bedrooms"], kitchen: true, wardrobes: 3, furniture: true, falseCeiling: true, flooring: false, finishLevel: "Premium" };
 
 export function EstimateForm() {
   const [form, setForm] = useState(initial); const [result, setResult] = useState<{ low: number; high: number; saved?: boolean } | null>(null); const [busy, setBusy] = useState(false); const [error, setError] = useState("");
-  async function calculate(next = form) { setBusy(true); setError(""); try { const response = await fetch("/api/estimates", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(next) }); const data = await response.json() as { low: number; high: number; saved?: boolean; error?: string }; if (!response.ok) throw new Error(data.error ?? "Estimate unavailable."); setResult(data); return data; } catch (e) { setError(e instanceof Error ? e.message : "Estimate unavailable."); throw e; } finally { setBusy(false); } }
+  const calculate = useCallback(async (next: EstimateInput = form) => { setBusy(true); setError(""); try { const response = await fetch("/api/estimates", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(next) }); const data = await response.json() as { low: number; high: number; saved?: boolean; error?: string }; if (!response.ok) throw new Error(data.error ?? "Estimate unavailable."); setResult(data); return data; } catch (e) { setError(e instanceof Error ? e.message : "Estimate unavailable."); throw e; } finally { setBusy(false); } }, [form]);
   useEffect(() => {
     const context = document.modelContext; if (!context?.registerTool) return; const lifecycle = new AbortController();
     void Promise.resolve(context.registerTool({ name: "calculate_interior_estimate", title: "Calculate interior estimate", description: "Calculate and display an indicative House of Veya interior budget range from home details.", inputSchema: { type: "object", properties: { carpetArea: { type: "number", minimum: 250, maximum: 20000 }, finishLevel: { type: "string", enum: ["Essential", "Premium", "Luxury"] }, city: { type: "string" } }, required: ["carpetArea", "finishLevel", "city"], additionalProperties: false }, annotations: { readOnlyHint: false, untrustedContentHint: false }, async execute(input) { const raw = input as { carpetArea?: number; finishLevel?: FinishLevel; city?: string }; if (!raw.carpetArea || !["Essential", "Premium", "Luxury"].includes(String(raw.finishLevel))) throw new Error("Valid area and finish level are required."); const next = { ...form, carpetArea: raw.carpetArea, finishLevel: raw.finishLevel!, city: raw.city || form.city }; setForm(next); const estimate = await calculate(next); return { estimatedLow: estimate.low, estimatedHigh: estimate.high, currency: "INR", indicative: true }; } }, { signal: lifecycle.signal })).catch(() => undefined);
     return () => lifecycle.abort();
-  }, [form]);
+  }, [calculate, form]);
   const toggleRoom = (room: string) => setForm({ ...form, rooms: form.rooms.includes(room) ? form.rooms.filter((item) => item !== room) : [...form.rooms, room] });
   return <div className="grid gap-0 border border-[#a99380] bg-[#eee3d7] lg:grid-cols-[1.1fr_.9fr]">
     <form onSubmit={(e) => { e.preventDefault(); void calculate(); }} className="p-6 sm:p-10 lg:p-14">
